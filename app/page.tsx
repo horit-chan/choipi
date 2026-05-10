@@ -1,4 +1,4 @@
-import Card from '@/components/layouts/Card';
+import { Card } from '@/components/ui/Card';
 
 export default function Home() {
   return (
