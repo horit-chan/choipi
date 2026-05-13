@@ -7,13 +7,27 @@ import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { error } from 'console';
 
-type FormData = {
-  user: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+const schema = z
+  .object({
+    user: z.string().min(2, 'ユーザーネームは2文字以上入力してください').trim(),
+    email: z
+      .email('メールアドレスの形式が正しくありません')
+      .min(1, 'メールアドレスを入力してください')
+      .trim(),
+    password: z
+      .string()
+      .min(8, 'パスワードは8文字以上で入力してください')
+      .max(64, 'パスワードは64文字以内で入力してください'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'パスワードが一致しません',
+    path: ['confirmPassword'],
+  });
+
+type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
   const { register, handleSubmit } = useForm<FormData>();
