@@ -30,7 +30,13 @@ const schema = z
 type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
-  const { register, handleSubmit } = useForm<FormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
   const router = useRouter();
 
   const onSubmit = async ({ user, email, password, confirmPassword }: FormData) => {
@@ -49,13 +55,14 @@ export default function SignupPage() {
     <main className="px-4 py-8">
       <div className="mx-auto flex flex-row flex-wrap justify-center gap-x-8 gap-y-6">
         <div className="w-100 rounded-md bg-gray-50 p-14 shadow-md">
-          <form className="text-center" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="text-center" onSubmit={handleSubmit(onSubmit)}>
             <h1 className="mb-8 font-bold">新規登録</h1>
 
             <Input
               label="ユーザーネーム"
               type="text"
               placeholder="ちょっぴー"
+              error={errors.user?.message}
               {...register('user', { required: true })}
             ></Input>
 
@@ -63,18 +70,21 @@ export default function SignupPage() {
               label="メールアドレス"
               type="email"
               placeholder="example@sample.com"
+              error={errors.email?.message}
               {...register('email', { required: true })}
             ></Input>
 
             <Input
               label="パスワード"
               type="password"
+              error={errors.password?.message}
               {...register('password', { required: true })}
             ></Input>
 
             <Input
               label="パスワード（確認）"
               type="password"
+              error={errors.confirmPassword?.message}
               {...register('confirmPassword', { required: true })}
             ></Input>
 
