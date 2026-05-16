@@ -11,15 +11,16 @@ import { error } from 'console';
 
 const schema = z
   .object({
-    user: z.string().min(2, 'ユーザーネームは2文字以上入力してください').trim(),
+    user: z
+      .string()
+      .min(2, 'ユーザーネームは2文字以上入力してください')
+      .max(32, 'ユーザーネームは32文字以内で入力してください')
+      .trim(),
     email: z
       .email('メールアドレスの形式が正しくありません')
       .min(1, 'メールアドレスを入力してください')
       .trim(),
-    password: z
-      .string()
-      .min(8, 'パスワードは8文字以上で入力してください')
-      .max(64, 'パスワードは64文字以内で入力してください'),
+    password: z.string().min(8, 'パスワードは8文字以上で入力してください'),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -36,6 +37,7 @@ export default function SignupPage() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    mode: 'onBlur',
   });
   const router = useRouter();
 
